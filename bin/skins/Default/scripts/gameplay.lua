@@ -556,6 +556,10 @@ function draw_song_info(deltaTime)
         gfx.Text(string.format("HiSpeed: %.0f x %.1f = %.0f",
                 gameplay.bpm, gameplay.hispeed, gameplay.bpm * gameplay.hispeed),
                 textX, 115)
+        gfx.Text(string.format("Playback Speed: %.0f",
+                100*gameplay.playbackSpeed),
+                textX, 130)
+
     end
 
     -- aaaand, scene!

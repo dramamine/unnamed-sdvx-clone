@@ -83,6 +83,11 @@ private:
 	SpeedMods m_speedMod;
     float m_modSpeed = 400;
 
+	// playback speed of the song
+	float m_playbackSpeed = 1.0f;
+	// true if playback speed has been changed
+	bool m_playbackSpeedChanged = false;
+
 	// Game Canvas
 	Ref<HealthGauge> m_scoringGauge;
 	//Ref<SettingsBar> m_settingsBar;
@@ -557,7 +562,7 @@ public:
 
 		m_track->ClearEffects();
 		m_particleSystem->Reset();
-		m_audioPlayback.SetPlaybackSpeed(1.0f);
+		m_audioPlayback.SetPlaybackSpeed(m_playbackSpeed);
 
 		//unhide notes
 		m_hiddenObjects.clear();
@@ -1086,6 +1091,10 @@ public:
 		lua_pushstring(m_lua, "hispeed");
 		lua_pushnumber(m_lua, m_hispeed);
 		lua_settable(m_lua, -3);
+		//playback speed
+		lua_pushstring(m_lua, "playbackSpeed");
+		lua_pushnumber(m_lua, m_playbackSpeed);
+		lua_settable(m_lua, -3);
 		//bpm
 		lua_pushstring(m_lua, "bpm");
 		lua_pushnumber(m_lua, m_currentTiming->GetBPM());
@@ -1600,6 +1609,15 @@ public:
 			FinishGame();
 		}
 	}
+	void UpdatePlaybackSpeed(float delta) {
+		m_playbackSpeedChanged = true;
+		m_playbackSpeed += delta;
+		// only allow playback speeds in this range
+		// could have playback faster than 100%, but song crashes out if you increase the speed
+		// and play through the sample buffer before using the new playback speed
+		m_playbackSpeed = Math::Clamp(m_playbackSpeed, 0.5f, 1.0f);
+		m_audioPlayback.SetPlaybackSpeed(m_playbackSpeed);
+	}
 
 	// These functions register / remove DSP's for the effect buttons
 	// the actual hearability of these is toggled in the tick by wheneter the buttons are held down
@@ -1670,6 +1688,14 @@ public:
 		else if(key == SDLK_F9)
 		{
 			g_application->ReloadScript("gameplay", m_lua);
+		}
+		else if (key == SDLK_EQUALS) // or plus
+		{
+			UpdatePlaybackSpeed(0.05f);
+		}
+		else if (key == SDLK_MINUS)
+		{
+			UpdatePlaybackSpeed(-0.05f);
 		}
 	}
 	void m_OnButtonPressed(Input::Button buttonCode)
@@ -1790,6 +1816,10 @@ public:
 	virtual float GetPlaybackSpeed() override
 	{
 		return m_audioPlayback.GetPlaybackSpeed();
+	}
+	virtual bool GetPlaybackSpeedChanged()
+	{
+		return m_playbackSpeedChanged;
 	}
 	virtual const String& GetMapRootPath() const
 	{

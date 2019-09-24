@@ -63,6 +63,7 @@ public:
 	// Song was manually ended
 	virtual bool GetManualExit() = 0;
 	virtual float GetPlaybackSpeed() = 0;
+	virtual bool GetPlaybackSpeedChanged() = 0;
 	// Set demo mode
 	virtual void SetDemoMode(bool value) = 0; 
 	// Set song db so a random song can be selected

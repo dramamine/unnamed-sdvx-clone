@@ -117,9 +117,10 @@ public:
 			m_simpleHitStats.Add(shs);
 		}
 
-		// Don't save the score if autoplay was on or if the song was launched using command line
-		// also don't save the score if the song was manually exited
-		if (!m_autoplay && !m_autoButtons && game->GetDifficultyIndex().mapId != -1 && !game->GetManualExit())
+		// Don't save the score if autoplay was on or if the song was launched using command line,
+		// song was manually exited, or playback speed was changed
+		if (!m_autoplay && !m_autoButtons && game->GetDifficultyIndex().mapId != -1 
+			&& !game->GetManualExit() && !game->GetPlaybackSpeedChanged())
 		{
 			m_mapDatabase.AddScore(game->GetDifficultyIndex(),
 				m_score,

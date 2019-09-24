@@ -56,6 +56,10 @@ If something breaks in the song database, delete "maps.db". **Please note this w
 - Press \[FX-L\] + \[FX-R\] to open up game settings (Hard gauge, Random, Mirror, etc.)
 - Press \[TAB\] to open the Search bar on the top to search for songs
 
+### During a song:
+- Hold \[Start\] and press \[FX-L\] to adjust hispeed modifier
+- Press \[-\] or \[+\] to adjust the playback speed of the song. (High scores won't be saved)
+
 ## How to run:
 Just run 'usc-game' or 'usc-game_Debug' from within the 'bin' folder. Or, to play a chart immediately:  
 #### `{Download Location}/bin> usc-game {path to *.ksh chart} [flags]`
