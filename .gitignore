@@ -50,3 +50,8 @@ Makefile
 
 # Document build files
 docs/build
+
+third_party
+sdvx.rar
+bin/skins/Default/skin.cfg
+bin/svdx.rar
