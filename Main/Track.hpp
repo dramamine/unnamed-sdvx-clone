@@ -44,6 +44,7 @@ public:
 	// Just the board with tick lines
 	void DrawBase(RenderQueue& rq);
 	// Draws an object
+	void DrawObjectState2(RenderQueue& rq, class BeatmapPlayback& playback, ObjectState* obj, bool active = false);
 	void DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, ObjectState* obj, bool active = false);
 	// Things like the laser pointers, hit bar and effect
 	void DrawOverlays(RenderQueue& rq);
@@ -114,6 +115,8 @@ public:
 	/* Reusable sprite mesh and material */
 	Mesh centeredTrackMesh;
 	Material spriteMaterial;
+
+	Mesh squareMesh;
 
 	// For flickering objects, like hold objects that are active
 	float objectGlow;

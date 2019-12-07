@@ -125,6 +125,8 @@ bool Track::AsyncFinalize()
 	buttonMesh = MeshGenerators::Quad(g_gl, Vector2(0.0f, 0.0f), Vector2(buttonWidth, buttonLength));
 	buttonMaterial->opaque = false;
 
+	squareMesh = MeshGenerators::Quad(g_gl, Vector2(0.0f, 0.0f), Vector2(buttonWidth, buttonWidth));
+
 	fxbuttonTexture->SetMipmaps(true);
 	fxbuttonTexture->SetFilter(true, true, 16.0f);
 	fxbuttonHoldTexture->SetMipmaps(true);
@@ -341,6 +343,8 @@ void Track::DrawBase(class RenderQueue& rq)
 		rq.Draw(tickTransform, trackTickMesh, buttonMaterial, params);
 	}
 }
+
+
 void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, ObjectState* obj, bool active)
 {
 	// Calculate height based on time on current track
@@ -362,12 +366,13 @@ void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, Ob
 		int currentObjectGlowState = active ? 2 + objectGlowState : 0;
 		if(mobj->button.index < 4) // Normal button
 		{
-			width = buttonWidth;
-			xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
-			length = buttonLength;
-			params.SetParameter("hasSample", mobj->button.hasSample);
-			params.SetParameter("mainTex", isHold ? buttonHoldTexture : buttonTexture);
-			mesh = buttonMesh;
+			return this->DrawObjectState2(rq, playback, obj, active);
+			// width = buttonWidth;
+			// xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
+			// length = buttonLength;
+			// params.SetParameter("hasSample", mobj->button.hasSample);
+			// params.SetParameter("mainTex", isHold ? buttonHoldTexture : buttonTexture);
+			// mesh = buttonMesh;
 		}
 		else // FX Button
 		{
@@ -461,130 +466,235 @@ void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, Ob
 		}
 	}
 }
-void Track::DrawOverlays(class RenderQueue& rq)
+
+void Track::DrawObjectState2(RenderQueue &rq, class BeatmapPlayback &playback, ObjectState *obj, bool active)
 {
-	// Draw button hit effect sprites
-	for(auto& hfx : m_hitEffects)
+	// Calculate height based on time on current track
+	float viewRange = GetViewRange();
+	float position = playback.TimeToViewDistance(obj->time) / viewRange;
+	float glow = 0.0f;
+
+	// @TODO test 0 position
+	position = 0.0;
+
+	if (obj->type == ObjectType::Single || obj->type == ObjectType::Hold)
 	{
-		hfx->Draw(rq);
-	}
-	if(timedHitEffect->time > 0.0f)
-		timedHitEffect->Draw(rq);
-}
-void Track::DrawTrackOverlay(RenderQueue& rq, Texture texture, float heightOffset /*= 0.05f*/, float widthScale /*= 1.0f*/)
-{
-	MaterialParameterSet params;
-	params.SetParameter("mainTex", texture);
-	Transform transform = trackOrigin;
-	transform *= Transform::Scale({ widthScale, 1.0f, 1.0f });
-	transform *= Transform::Translation({ 0.0f, heightOffset, 0.0f });
-	rq.Draw(transform, trackMesh, trackOverlay, params);
-}
-void Track::DrawSprite(RenderQueue& rq, Vector3 pos, Vector2 size, Texture tex, Color color /*= Color::White*/, float tilt /*= 0.0f*/)
-{
-	Transform spriteTransform = trackOrigin;
-	spriteTransform *= Transform::Translation(pos);
-	spriteTransform *= Transform::Scale({ size.x, size.y, 1.0f });
-	if(tilt != 0.0f)
-		spriteTransform *= Transform::Rotation({ tilt, 0.0f, 0.0f });
+		bool isHold = obj->type == ObjectType::Hold;
+		MultiObjectState *mobj = (MultiObjectState *)obj;
+		MaterialParameterSet params;
+		Material mat = buttonMaterial;
+		Mesh mesh;
+		float width;
+		float xposition;
+		float length;
+		float currentObjectGlow = active ? objectGlow : 0.3f;
+		int currentObjectGlowState = active ? 2 + objectGlowState : 0;
+		Vector3 destination;
 
-	MaterialParameterSet params;
-	params.SetParameter("mainTex", tex);
-	params.SetParameter("color", color);
-	rq.Draw(spriteTransform, centeredTrackMesh, spriteMaterial, params);
+		if (mobj->button.index < 4) // Normal button
+		{
+			width = buttonWidth;
+			xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
+			length = buttonLength;
+			params.SetParameter("hasSample", mobj->button.hasSample);
+			params.SetParameter("mainTex", isHold ? buttonHoldTexture : buttonTexture);
+			mesh = buttonMesh;
+
+			switch (mobj->button.index)
+			{
+			case 0:
+				destination = Vector3(-1.0, 1.0, 0.2);
+				break;
+			case 1:
+				destination = Vector3(-1.0, 0.0, 0.0);
+				break;
+			case 2:
+				destination = Vector3(1.0, 1.0, 0.0);
+				break;
+			case 3:
+				destination = Vector3(1.0, 0.0, 0.2);
+				break;
+
+			default:
+				break;
+			}
+
+
+		}
+		// else // FX Button
+		// {
+		// 	width = fxbuttonWidth;
+		// 	xposition = buttonTrackWidth * -0.5f + fxbuttonWidth * (mobj->button.index - 4);
+		// 	length = fxbuttonLength;
+		// 	params.SetParameter("hasSample", mobj->button.hasSample);
+		// 	params.SetParameter("mainTex", isHold ? fxbuttonHoldTexture : fxbuttonTexture);
+		// 	mesh = fxbuttonMesh;
+		// }
+
+		// if (isHold)
+		// {
+		// 	if (!active && mobj->hold.GetRoot()->time > playback.GetLastTime())
+		// 		params.SetParameter("hitState", 1);
+		// 	else
+		// 		params.SetParameter("hitState", currentObjectGlowState);
+
+		// 	params.SetParameter("objectGlow", currentObjectGlow);
+		// 	mat = holdButtonMaterial;
+		// }
+
+		// Vector3 buttonPos = Vector3(xposition, trackLength * position, 0.0f);
+
+
+		/* this stuff was OK
+		// Vector3 buttonPos = destination;
+
+		// Transform buttonTransform = trackOrigin;
+		// buttonTransform *= Transform::Translation(buttonPos);
+		// float scale = 1.0f;
+		// // if (isHold) // Hold Note?
+		// // {
+		// // 	scale = (playback.DurationToViewDistanceAtTime(mobj->time, mobj->hold.duration) / viewRange) / length * trackLength;
+		// // }
+		
+		// buttonTransform *= Transform::Scale({1.0f, scale, 1.0f});
+		// buttonTransform *= Transform::Rotation({70.0, 0.0, 0.0});
+		// rq.Draw(buttonTransform, mesh, mat, params);
+		*/
+		Vector3 buttonPos = {-5.0f*buttonWidth, 0.0f, 0.0f};
+
+		Transform buttonTransform = trackOrigin;
+		buttonTransform *= Transform::Translation(buttonPos);
+		float scale = 10.0f;
+
+		buttonTransform *= Transform::Rotation({87.0, 0.0, 0.0});
+		buttonTransform *= Transform::Scale({scale, scale, 1.0f});
+		rq.Draw(buttonTransform, squareMesh, mat, params);
+	}
 }
-void Track::DrawCombo(RenderQueue& rq, uint32 score, Color color, float scale)
-{
-	if(score == 0)
-		return;
-	Vector<Mesh> meshes;
-	while(score > 0)
+
+	void Track::DrawOverlays(class RenderQueue & rq)
 	{
-		uint32 c = score % 10;
-		meshes.Add(comboSpriteMeshes[c]);
-		score -= c;
-		score /= 10;
+		// Draw button hit effect sprites
+		for (auto &hfx : m_hitEffects)
+		{
+			hfx->Draw(rq);
+		}
+		if (timedHitEffect->time > 0.0f)
+			timedHitEffect->Draw(rq);
 	}
-	const float charWidth = trackWidth * 0.15f * scale;
-	const float seperation = charWidth * 0.7f;
-	float size = (float)(meshes.size()-1) * seperation;
-	float halfSize = size * 0.5f;
-
-	///TODO: cleanup
-	MaterialParameterSet params;
-	params.SetParameter("mainTex", 0);
-	params.SetParameter("color", color);
-	for(uint32 i = 0; i < meshes.size(); i++)
+	void Track::DrawTrackOverlay(RenderQueue & rq, Texture texture, float heightOffset /*= 0.05f*/, float widthScale /*= 1.0f*/)
 	{
-		float xpos = -halfSize + seperation * (meshes.size()-1-i);
-		Transform t = trackOrigin;
-		t *= Transform::Translation({ xpos, 0.3f, -0.004f});
-		t *= Transform::Scale({charWidth, charWidth, 1.0f});
-		rq.Draw(t, meshes[i], spriteMaterial, params);
+		MaterialParameterSet params;
+		params.SetParameter("mainTex", texture);
+		Transform transform = trackOrigin;
+		transform *= Transform::Scale({widthScale, 1.0f, 1.0f});
+		transform *= Transform::Translation({0.0f, heightOffset, 0.0f});
+		rq.Draw(transform, trackMesh, trackOverlay, params);
 	}
-}
-
-Vector3 Track::TransformPoint(const Vector3 & p)
-{
-	return trackOrigin.TransformPoint(p);
-}
-
-TimedEffect* Track::AddEffect(TimedEffect* effect)
-{
-	m_hitEffects.Add(effect);
-	effect->track = this;
-	return effect;
-}
-void Track::ClearEffects()
-{
-	m_trackHide = 0.0f;
-	m_trackHideSpeed = 0.0f;
-
-	for(auto it = m_hitEffects.begin(); it != m_hitEffects.end(); it++)
+	void Track::DrawSprite(RenderQueue & rq, Vector3 pos, Vector2 size, Texture tex, Color color /*= Color::White*/, float tilt /*= 0.0f*/)
 	{
-		delete *it;
-	}
-	m_hitEffects.clear();
-}
+		Transform spriteTransform = trackOrigin;
+		spriteTransform *= Transform::Translation(pos);
+		spriteTransform *= Transform::Scale({size.x, size.y, 1.0f});
+		if (tilt != 0.0f)
+			spriteTransform *= Transform::Rotation({tilt, 0.0f, 0.0f});
 
-void Track::SetViewRange(float newRange)
-{
-	if(newRange != m_viewRange)
+		MaterialParameterSet params;
+		params.SetParameter("mainTex", tex);
+		params.SetParameter("color", color);
+		rq.Draw(spriteTransform, centeredTrackMesh, spriteMaterial, params);
+	}
+	void Track::DrawCombo(RenderQueue & rq, uint32 score, Color color, float scale)
 	{
-		m_viewRange = newRange;
+		if (score == 0)
+			return;
+		Vector<Mesh> meshes;
+		while (score > 0)
+		{
+			uint32 c = score % 10;
+			meshes.Add(comboSpriteMeshes[c]);
+			score -= c;
+			score /= 10;
+		}
+		const float charWidth = trackWidth * 0.15f * scale;
+		const float seperation = charWidth * 0.7f;
+		float size = (float)(meshes.size() - 1) * seperation;
+		float halfSize = size * 0.5f;
 
-		// Update view range
-		float newLaserLengthScale = trackLength / (m_viewRange * laserSpeedOffset);
-		m_laserTrackBuilder[0]->laserLengthScale = newLaserLengthScale;
-		m_laserTrackBuilder[1]->laserLengthScale = newLaserLengthScale;
-
-		// Reset laser tracks cause these won't be correct anymore
-		m_laserTrackBuilder[0]->Reset();
-		m_laserTrackBuilder[1]->Reset();
+		///TODO: cleanup
+		MaterialParameterSet params;
+		params.SetParameter("mainTex", 0);
+		params.SetParameter("color", color);
+		for (uint32 i = 0; i < meshes.size(); i++)
+		{
+			float xpos = -halfSize + seperation * (meshes.size() - 1 - i);
+			Transform t = trackOrigin;
+			t *= Transform::Translation({xpos, 0.3f, -0.004f});
+			t *= Transform::Scale({charWidth, charWidth, 1.0f});
+			rq.Draw(t, meshes[i], spriteMaterial, params);
+		}
 	}
-}
 
-void Track::SendLaserAlert(uint8 laserIdx)
-{
-	if (m_alertTimer[laserIdx] > 3.0f)
-		m_alertTimer[laserIdx] = 0.0f;
-}
+	Vector3 Track::TransformPoint(const Vector3 &p)
+	{
+		return trackOrigin.TransformPoint(p);
+	}
 
-void Track::SetLaneHide(bool hide, double duration)
-{
-	m_trackHideSpeed = hide ? 1.0f / duration : -1.0f / duration;
-}
+	TimedEffect *Track::AddEffect(TimedEffect * effect)
+	{
+		m_hitEffects.Add(effect);
+		effect->track = this;
+		return effect;
+	}
+	void Track::ClearEffects()
+	{
+		m_trackHide = 0.0f;
+		m_trackHideSpeed = 0.0f;
 
-float Track::GetViewRange() const
-{
-	return m_viewRange;
-}
+		for (auto it = m_hitEffects.begin(); it != m_hitEffects.end(); it++)
+		{
+			delete *it;
+		}
+		m_hitEffects.clear();
+	}
 
-float Track::GetButtonPlacement(uint32 buttonIdx)
-{
-	if(buttonIdx < 4)
-		return buttonIdx * buttonWidth - (buttonWidth * 1.5f);
-	else
-		return (buttonIdx - 4) * fxbuttonWidth - (fxbuttonWidth * 0.5f);
-}
+	void Track::SetViewRange(float newRange)
+	{
+		if (newRange != m_viewRange)
+		{
+			m_viewRange = newRange;
 
+			// Update view range
+			float newLaserLengthScale = trackLength / (m_viewRange * laserSpeedOffset);
+			m_laserTrackBuilder[0]->laserLengthScale = newLaserLengthScale;
+			m_laserTrackBuilder[1]->laserLengthScale = newLaserLengthScale;
+
+			// Reset laser tracks cause these won't be correct anymore
+			m_laserTrackBuilder[0]->Reset();
+			m_laserTrackBuilder[1]->Reset();
+		}
+	}
+
+	void Track::SendLaserAlert(uint8 laserIdx)
+	{
+		if (m_alertTimer[laserIdx] > 3.0f)
+			m_alertTimer[laserIdx] = 0.0f;
+	}
+
+	void Track::SetLaneHide(bool hide, double duration)
+	{
+		m_trackHideSpeed = hide ? 1.0f / duration : -1.0f / duration;
+	}
+
+	float Track::GetViewRange() const
+	{
+		return m_viewRange;
+	}
+
+	float Track::GetButtonPlacement(uint32 buttonIdx)
+	{
+		if (buttonIdx < 4)
+			return buttonIdx * buttonWidth - (buttonWidth * 1.5f);
+		else
+			return (buttonIdx - 4) * fxbuttonWidth - (fxbuttonWidth * 0.5f);
+	}
