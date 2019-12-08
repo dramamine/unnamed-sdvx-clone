@@ -116,7 +116,7 @@ public:
 	Mesh centeredTrackMesh;
 	Material spriteMaterial;
 
-	Mesh squareMesh;
+	Mesh hexMesh;
 
 	// For flickering objects, like hold objects that are active
 	float objectGlow;

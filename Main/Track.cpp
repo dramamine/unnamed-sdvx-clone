@@ -125,7 +125,7 @@ bool Track::AsyncFinalize()
 	buttonMesh = MeshGenerators::Quad(g_gl, Vector2(0.0f, 0.0f), Vector2(buttonWidth, buttonLength));
 	buttonMaterial->opaque = false;
 
-	squareMesh = MeshGenerators::Quad(g_gl, Vector2(0.0f, 0.0f), Vector2(buttonWidth, buttonWidth));
+	hexMesh = MeshGenerators::Hex(g_gl, Vector2(0.0f, 0.0f), 1.0, 0.2);
 
 	fxbuttonTexture->SetMipmaps(true);
 	fxbuttonTexture->SetFilter(true, true, 16.0f);
@@ -564,11 +564,11 @@ void Track::DrawObjectState2(RenderQueue &rq, class BeatmapPlayback &playback, O
 
 		Transform buttonTransform = trackOrigin;
 		buttonTransform *= Transform::Translation(buttonPos);
-		float scale = 10.0f;
+		float scale = 1.0f;
 
 		buttonTransform *= Transform::Rotation({87.0, 0.0, 0.0});
 		buttonTransform *= Transform::Scale({scale, scale, 1.0f});
-		rq.Draw(buttonTransform, squareMesh, mat, params);
+		rq.Draw(buttonTransform, hexMesh, mat, params);
 	}
 }
 

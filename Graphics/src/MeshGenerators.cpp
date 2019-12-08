@@ -57,5 +57,78 @@ namespace Graphics
 		for(auto& v : verts)
 			out.Add(v);
 	}
+	Mesh MeshGenerators::Hex(OpenGL *gl, Vector2 pos, float width, float thickness)
+	{
+		float w = width;
+		float i = thickness;
+		float x = w / (2 + sqrt(3.0));
+		float h = i * sqrt(3.0) / 2;
+		float j = i / 2.0;
+		float l = w - 2.0 * x;
 
+		Vector<MeshGenerators::SimpleVertex> verts =
+				{
+						{{x, 0.0, 0.0}, {0.0, 0.0}},
+						{{x + l, 0.0, 0.0}, {0.0, 0.0}},
+						{{x + j, h, 0.0}, {1.0, 1.0}},
+
+						{{x + l - j, h, 0.0}, {1.0, 1.0}},
+						{{x + j, h, 0.0}, {1.0, 1.0}},
+						{{x + l, 0.0, 0.0}, {0.0, 0.0}},
+
+						// bottom-right
+						{{x + l, 0.0, 0.0}, {0.0, 0.0}},
+						{{w, w / 2.0f, 0.0}, {0.0, 0.0}},
+						{{x + l - j, h, 0.0}, {1.0, 1.0}},
+
+						{{w - i, w / 2.0f, 0.0}, {1.0, 1.0}},
+						{{x + l - j, h, 0.0}, {1.0, 1.0}},
+						{{w, w / 2.0f, 0.0}, {0.0, 0.0}},
+
+						// top-right
+						{{w, w / 2.0f, 0.0}, {0.0, 0.0}},
+						{{x + l, w, 0.0}, {0.0, 0.0}},
+						{{w - i, w / 2.0f, 0.0}, {1.0, 1.0}},
+
+						{{x + l - j, w - h, 0.0}, {1.0, 1.0}},
+						{{w - i, w / 2.0f, 0.0}, {1.0, 1.0}},
+						{{x + l, w, 0.0}, {0.0, 0.0}},
+
+						// top
+						{{x + l, w, 0.0}, {0.0, 0.0}},
+						{{x, w, 0.0}, {0.0, 0.0}},
+						{{x + l - j, w - h, 0.0}, {1.0, 1.0}},
+
+						{{x + j, w - h, 0.0}, {1.0, 1.0}},
+						{{x + l - j, w - h, 0.0}, {1.0, 1.0}},
+						{{x, w, 0.0}, {0.0, 0.0}},
+
+						// top left
+						{{x, w, 0.0}, {0.0, 0.0}},
+						{{0.0, w / 2.0f, 0.0}, {0.0, 0.0}},
+						{{x + j, w - h, 0.0}, {1.0, 1.0}},
+
+						{{i, w / 2.0f, 0.0}, {1.0, 1.0}},
+						{{x + j, w - h, 0.0}, {1.0, 1.0}},
+						{{0.0, w / 2.0f, 0.0}, {0.0, 0.0}},
+
+						// bottom left
+						{{0.0, w / 2.0f, 0.0}, {0.0, 0.0}},
+						{{x, 0.0, 0.0}, {0.0, 0.0}},
+						{{i, w / 2.0f, 0.0}, {1.0, 1.0}},
+
+						{{x + j, h, 0.0}, {1.0, 1.0}},
+						{{i, w / 2.0f, 0.0}, {1.0, 1.0}},
+						{{x, 0.0, 0.0}, {0.0, 0.0}},
+				};
+		for (auto &v : verts)
+		{
+			v.pos += pos;
+		}
+
+		Mesh mesh = MeshRes::Create(gl);
+		mesh->SetData(verts);
+		mesh->SetPrimitiveType(PrimitiveType::TriangleList);
+		return mesh;
+	}
 }

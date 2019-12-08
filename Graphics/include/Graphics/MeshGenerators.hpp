@@ -31,5 +31,7 @@ namespace Graphics
 		void GenerateSimpleXYQuad(Rect3D r, Rect uv, Vector<MeshGenerators::SimpleVertex>& out);
 
 		void GenerateSimpleXZQuad(Rect3D r, Rect uv, Vector<MeshGenerators::SimpleVertex>& out);
+
+		Mesh Hex(OpenGL *gl, Vector2 pos, float width, float thickness);
 	}
 }
