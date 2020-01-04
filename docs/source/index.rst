@@ -23,6 +23,8 @@ Contents:
    settingswheel
    skinsettings
    http
+   bgfg
+   collectiondialog
 
 
 Indices and tables

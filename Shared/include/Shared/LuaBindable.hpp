@@ -15,6 +15,14 @@ public:
 	{
 		m_lua = L;
 	}
+	~LuaBindable()
+	{
+		for (auto b : Bindings)
+		{
+			delete b.second;
+		}
+	}
+
 	template<typename Class>
 	void AddFunction(String name, Class* object, int (Class::*func)(lua_State*))
 	{
@@ -35,6 +43,10 @@ public:
 		luaL_setmetatable(m_lua, "Scriptable");
 		lua_setglobal(m_lua, *m_name);
 	}
+	String GetName()
+	{
+		return m_name;
+	}
 
 private:
 	String m_name;
@@ -44,7 +56,13 @@ private:
 static int lMemberCallFunction(lua_State* L)
 {
 	IFunctionBinding<int, lua_State*>** t = (IFunctionBinding<int, lua_State*>**)(luaL_checkudata(L, 1, "Scriptable_Callback"));
-	return (*t)->Call(L);
+	if(*t)
+		return (*t)->Call(L);
+	else
+	{
+		lua_error(L);
+		return 0;
+	}
 }
 
 static int lIndexFunction(lua_State* L)
