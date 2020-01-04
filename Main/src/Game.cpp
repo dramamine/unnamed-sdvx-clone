@@ -1156,6 +1156,11 @@ public:
 		}
 	}
 
+	void ShowModeMenu()
+	{
+		Logf("Showing the menu.", Logger::Warning);
+	}
+
 	// Called when game is finished and the score screen should show up
 	void FinishGame()
 	{
@@ -1700,6 +1705,10 @@ public:
 		else if (key == SDLK_MINUS)
 		{
 			UpdatePlaybackSpeed(-0.05f);
+		}
+		else if (key == SDLK_F1 || SDLK_F6)
+		{
+			ShowModeMenu();
 		}
 	}
 	void m_OnButtonPressed(Input::Button buttonCode)

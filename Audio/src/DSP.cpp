@@ -590,7 +590,7 @@ void CombinedFilterDSP::Process(float* out, uint32 numSamples)
 	peak.Process(out, numSamples);
 }
 
-#include "SoundTouch.h"
+#include "soundtouch\include\SoundTouch.h"
 using namespace soundtouch;
 
 class PitchShiftDSP_Impl
