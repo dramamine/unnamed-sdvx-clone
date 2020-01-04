@@ -7,12 +7,15 @@
 #include <Beatmap/BeatmapPlayback.hpp>
 #include <Beatmap/BeatmapObjects.hpp>
 #include "AsyncAssetLoader.hpp"
+#include "midiout.hpp"
 
 const float Track::trackWidth = 1.0f;
 const float Track::buttonWidth = 1.0f / 6;
 const float Track::laserWidth = buttonWidth;
 const float Track::fxbuttonWidth = buttonWidth * 2;
 const float Track::buttonTrackWidth = buttonWidth * 4;
+
+MidiOut* midi;
 
 Track::Track()
 {
@@ -21,7 +24,11 @@ Track::Track()
 		trackLength = 12.0f;
 	else
 		trackLength = 10.0f;
+	
+	midi = new MidiOut();
+	midi->sendMessage();
 }
+
 Track::~Track()
 {
 	if(loader)
