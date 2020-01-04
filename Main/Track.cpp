@@ -25,7 +25,7 @@ Track::Track()
 	else
 		trackLength = 10.0f;
 	
-	midi = new MidiOut();
+	midi = MidiOut::getInstance();
 	midi->sendMessage();
 }
 

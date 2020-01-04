@@ -57,3 +57,5 @@ bin/skins/Default/skin.cfg
 bin/svdx.rar
 third_party/discord-rpc
 third_party/cpr
+
+bin/skins/usc*

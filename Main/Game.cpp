@@ -21,6 +21,7 @@
 #include "GameConfig.hpp"
 #include <Shared/Time.hpp>
 #include "SDL2/SDL_keycode.h"
+#include "midiout.hpp"
 
 extern "C"
 {
@@ -78,6 +79,9 @@ private:
 
 	// Current lane toggle status
 	bool m_hideLane = false;
+
+  MidiOut* midi;
+	double lastBPM = 0;
 
     // Use m-mod and what m-mod speed
 	SpeedMods m_speedMod;
@@ -176,6 +180,8 @@ public:
 		m_hispeed = g_gameConfig.GetFloat(GameConfigKeys::HiSpeed);
 		m_speedMod = g_gameConfig.GetEnum<Enum_SpeedMods>(GameConfigKeys::SpeedMod);
 		m_modSpeed = g_gameConfig.GetFloat(GameConfigKeys::ModSpeed);
+
+		midi = MidiOut::getInstance();
 	}
 
 	Game_Impl(const DifficultyIndex& difficulty, GameFlags flags)
@@ -189,7 +195,8 @@ public:
 
 		m_hispeed = g_gameConfig.GetFloat(GameConfigKeys::HiSpeed);
 		m_speedMod = g_gameConfig.GetEnum<Enum_SpeedMods>(GameConfigKeys::SpeedMod);
-        m_modSpeed = g_gameConfig.GetFloat(GameConfigKeys::ModSpeed);
+		m_modSpeed = g_gameConfig.GetFloat(GameConfigKeys::ModSpeed);
+		midi = MidiOut::getInstance();
 	}
 	~Game_Impl()
 	{
@@ -1018,6 +1025,13 @@ public:
 		// Get the current timing point
 		m_currentTiming = &m_playback.GetCurrentTimingPoint();
 
+		// lastBPM / midi stuff
+		double bpm = m_currentTiming->GetBPM();
+		if (lastBPM != bpm) {
+			lastBPM = bpm;
+			midi->updateBPM(bpm);
+		}
+
 
 		// Update hispeed
 		if (g_input.GetButton(Input::Button::BT_S))
@@ -1560,8 +1574,8 @@ public:
 
     void OnTimingPointChanged(TimingPoint* tp)
     {
-       m_hispeed = m_modSpeed / tp->GetBPM(); 
-    }
+			m_hispeed = m_modSpeed / tp->GetBPM();
+		}
 
 	void OnLaneToggleChanged(LaneHideTogglePoint* tp)
 	{
