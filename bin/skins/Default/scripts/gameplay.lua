@@ -286,7 +286,9 @@ function render(deltaTime)
 		gfx.TextAlign(gfx.TEXT_ALIGN_TOP + gfx.TEXT_ALIGN_CENTER)
 		gfx.FillColor(255,255,255)
 		gfx.Text("Autoplay", desw/2, yshift)
-	end
+    end
+    
+    draw_lightdream_menu(deltaTime)
 end
 -- -------------------------------------------------------------------------- --
 -- SetUpCritTransform:                                                        --
@@ -583,6 +585,55 @@ function draw_stat(x, y, w, h, name, value, format, r, g, b)
     -- Return the next `y` position, for easier vertical stacking
     return y + h + 5
 end
+
+local sbb = gfx.CreateSkinImage("lightdream/sky-banners-blue.png", 0)
+local sbo = gfx.CreateSkinImage("lightdream/sky-banners-orange.png", 0)
+local sbp = gfx.CreateSkinImage("lightdream/sky-banners-purple.png", 0)
+local selectedOption = 0
+local fadeInAlpha = 0.
+
+function lightdream_menu(option)
+    -- if selectedOption == 0 and option > 0 then
+    --     fadeInAlpha = 0
+    -- end
+    selectedOption = option
+end
+
+function draw_lightdream_menu(deltaTime)
+    if (selectedOption == 0) then 
+        if (fadeInAlpha <= 0) then return end
+        fadeInAlpha = fadeInAlpha - 0.01
+    elseif (fadeInAlpha < 1) then
+        fadeInAlpha = fadeInAlpha + 0.01
+    end
+
+    selected_alpha = 1. * fadeInAlpha
+    unselected_alpha = 0.6 * fadeInAlpha
+    -- angle  = (0.2) * math.cos(funAngle/50)
+    -- funAngle = funAngle + 1
+    xpos = 130
+    ypos = 400
+    yinc = 175
+
+    imgw = 1000
+    -- image width is 630
+    -- screen is about 1275
+    gfx.BeginPath()
+    gfx.StrokeColor(0,0,0)
+    gfx.ImageRect(xpos, ypos, imgw, 150, sbb, 
+      selectedOption == 1 and selected_alpha or unselected_alpha,
+      0.)
+    gfx.BeginPath()
+    gfx.ImageRect(xpos, ypos + yinc, imgw, 150, sbo,
+      selectedOption == 2 and selected_alpha or unselected_alpha,
+      0.)
+    gfx.BeginPath()
+    gfx.ImageRect(xpos, ypos + 2*yinc, imgw, 150, sbp,
+      selectedOption == 3 and selected_alpha or unselected_alpha,
+      0.)
+
+end
+
 -- -------------------------------------------------------------------------- --
 -- draw_song_info:                                                            --
 -- Draws current song information at the top left of the screen.              --
@@ -882,7 +933,9 @@ function render_intro(deltaTime)
 	end
 	bta_last = game.GetButton(game.BUTTON_BTA)
     introTimer = math.max(introTimer, 0)
-	
+    
+    draw_lightdream_menu(deltaTime)
+
     return introTimer <= 0
 end
 -- -------------------------------------------------------------------------- --

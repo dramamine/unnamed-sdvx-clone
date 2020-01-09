@@ -85,6 +85,7 @@ private:
 
   MidiOut* midi;
 	double lastBPM = 0;
+	int lightdreamMenuIdx = 0;
 
     // Use m-mod and what m-mod speed
 	SpeedMods m_speedMod;
@@ -1156,9 +1157,17 @@ public:
 		}
 	}
 
-	void ShowModeMenu()
+	void UpdateLightdreamMenu(int inc)
 	{
-		Logf("Showing the menu.", Logger::Warning);
+		lightdreamMenuIdx = std::max(0, std::min(3, lightdreamMenuIdx + inc));
+		Logf("updating the menu %d", Logger::Warning, lightdreamMenuIdx);
+
+		lua_getglobal(m_lua, "lightdream_menu");
+		lua_pushinteger(m_lua, lightdreamMenuIdx);
+		if (lua_pcall(m_lua, 1, 0, 0) != 0)
+		{
+			Logf("Lua error on calling lightdream_menu: %s", Logger::Error, lua_tostring(m_lua, -1));
+		}
 	}
 
 	// Called when game is finished and the score screen should show up
@@ -1706,9 +1715,13 @@ public:
 		{
 			UpdatePlaybackSpeed(-0.05f);
 		}
-		else if (key == SDLK_F1 || SDLK_F6)
+		else if (key == SDLK_F1)
 		{
-			ShowModeMenu();
+			UpdateLightdreamMenu(-1);
+		}
+		else if (key == SDLK_F2)
+		{
+			UpdateLightdreamMenu(1);
 		}
 	}
 	void m_OnButtonPressed(Input::Button buttonCode)
