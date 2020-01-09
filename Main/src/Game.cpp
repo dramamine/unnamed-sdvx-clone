@@ -584,6 +584,7 @@ public:
 
 		if(!m_paused)
 			TickGameplay(deltaTime);
+			midi->tick(deltaTime);
 
 
 		// Update hispeed or hidden range

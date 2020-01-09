@@ -1,4 +1,5 @@
 #pragma once
+#include "Input.hpp"
 #include "E:\git\rtmidi-4.0.0\RtMidi.h"
 /*
 	The object responsible for drawing the track.
@@ -23,4 +24,8 @@ public:
 	void updateBPM(float bpm);
 
 	void sendMessage();
+	void sendMessage(int a, int b, int c);
+	void onButtonPressed(Input::Button b);
+	void onButtonReleased(Input::Button b);
+	void tick(float deltaTime);
 };

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "Input.hpp"
 #include "GameConfig.hpp"
+#include "midiout.hpp"
+
+MidiOut *midio;
 
 Input::~Input()
 {
@@ -61,6 +64,8 @@ void Input::Init(Graphics::Window& wnd)
 
 	// Init keyboard mapping
 	m_InitKeyboardMapping();
+
+	midio = MidiOut::getInstance();
 }
 void Input::Cleanup()
 {
@@ -295,6 +300,7 @@ void Input::m_InitControllerMapping()
 
 void Input::m_OnButtonInput(Button b, bool pressed)
 {
+	
 	bool& state = m_buttonStates[(size_t)b];
 	if(state != pressed)
 	{
@@ -308,11 +314,14 @@ void Input::m_OnButtonInput(Button b, bool pressed)
 			else if (b == Button::BT_S && m_backComboHold && Are3BTsHeld());
 			else
 			{
+				// relay button changes
+				midio->onButtonPressed(b);
 				OnButtonPressed.Call(b);
 			}
 		}
 		else
 		{
+			midio->onButtonReleased(b);
 			OnButtonReleased.Call(b);
 		}
 	}
