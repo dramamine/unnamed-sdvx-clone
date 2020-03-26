@@ -3,6 +3,7 @@
 #include <Beatmap/BeatmapPlayback.hpp>
 #include <math.h>
 #include "GameConfig.hpp"
+#include "midiout.hpp"
 
 const MapTime Scoring::missHitTime = 250;
 const MapTime Scoring::holdHitTime = 138;
@@ -10,8 +11,11 @@ const MapTime Scoring::goodHitTime = 92;
 const MapTime Scoring::perfectHitTime = 46;
 const float Scoring::idleLaserSpeed = 1.0f;
 
+MidiOut *midiot;
+
 Scoring::Scoring()
 {
+	midiot = MidiOut::getInstance();
 }
 Scoring::~Scoring()
 {
@@ -660,6 +664,7 @@ void Scoring::m_UpdateTicks()
 				if(tick->HasFlag(TickFlags::Button) && (autoplay || autoplayButtons))
 				{
 					m_TickHit(tick, buttonCode, 0);
+					midiot->quickPress(buttonCode);
 					processed = true;
 				}
 

@@ -26,7 +26,6 @@ Track::Track()
 		trackLength = 10.0f;
 
 	midi = MidiOut::getInstance();
-	midi->sendMessage();
 }
 Track::~Track()
 {
@@ -377,13 +376,13 @@ void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, Ob
 		int currentObjectGlowState = active ? 2 + objectGlowState : 0;
 		if(mobj->button.index < 4) // Normal button
 		{
-			return this->DrawObjectState2(rq, playback, obj, active);
-			// width = buttonWidth;
-			// xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
-			// length = buttonLength;
-			// params.SetParameter("hasSample", mobj->button.hasSample);
-			// params.SetParameter("mainTex", isHold ? buttonHoldTexture : buttonTexture);
-			// mesh = buttonMesh;
+			// return this->DrawObjectState2(rq, playback, obj, active);
+			 width = buttonWidth;
+			 xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
+			 length = buttonLength;
+			 params.SetParameter("hasSample", mobj->button.hasSample);
+			 params.SetParameter("mainTex", isHold ? buttonHoldTexture : buttonTexture);
+			 mesh = buttonMesh;
 		}
 		else // FX Button
 		{
