@@ -366,6 +366,28 @@ void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, Ob
 	{
 		bool isHold = obj->type == ObjectType::Hold;
 		MultiObjectState* mobj = (MultiObjectState*)obj;
+
+		if (position < 0.0f) {
+			switch ((uint8)mobj->button.index)
+			{
+			case 0:
+				if (obj->time > lastHit) {
+					lastHit = obj->time;
+					midi->audioHit();
+				}				
+				break;
+			case 1:
+			case 3:
+				if (obj->time > lastSceneChange) {
+					lastSceneChange = obj->time;
+					midi->sceneChange();
+				}				
+				break;
+			default:
+				break;
+			}
+		}
+		
 		MaterialParameterSet params;
 		Material mat = buttonMaterial;
 		Mesh mesh;
@@ -377,6 +399,9 @@ void Track::DrawObjectState(RenderQueue& rq, class BeatmapPlayback& playback, Ob
 		if(mobj->button.index < 4) // Normal button
 		{
 			// return this->DrawObjectState2(rq, playback, obj, active);
+
+
+
 			 width = buttonWidth;
 			 xposition = buttonTrackWidth * -0.5f + width * mobj->button.index;
 			 length = buttonLength;

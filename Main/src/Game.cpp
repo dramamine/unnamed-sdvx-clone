@@ -32,6 +32,8 @@ extern "C"
 
 #include "GUI/HealthGauge.hpp"
 
+int lastZoom = -1;
+
 // Try load map helper
 Ref<Beatmap> TryLoadMap(const String& path)
 {
@@ -649,6 +651,11 @@ public:
 
 		m_camera.pLaneZoom = m_playback.GetZoom(0);
 		m_camera.pLanePitch = m_playback.GetZoom(1);
+		float pitch = (100 * m_camera.pLanePitch);
+		//int pch = (int)floor(pitch);
+		//if (pch != lastZoom) 
+		//  midi->sendZoom(1, pch);
+
 		m_camera.pLaneOffset = m_playback.GetZoom(2);
 		m_camera.pLaneTilt = m_playback.GetZoom(3);
 		m_camera.pManualTiltEnabled = m_manualTiltEnabled;
@@ -2098,6 +2105,7 @@ public:
 		};
 
 		auto mapSettings = GetBeatmap()->GetMapSettings();
+		midi->sendTitle(mapSettings.title);
 		lua_newtable(L);
 		String jacketPath = m_mapRootPath + "/" + mapSettings.jacketPath;
 		pushStringToTable("jacketPath", jacketPath);

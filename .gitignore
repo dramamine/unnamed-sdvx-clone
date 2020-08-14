@@ -58,4 +58,6 @@ bin/svdx.rar
 bin/skins/usc*
 
 third_party
-boost/
+third_party/
+boost/*
+bin/usc-game_Debug play a song.lnk

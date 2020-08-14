@@ -26,6 +26,9 @@ float SPEED_OF_EASE_OUT = 150.;
 
 int CC_CONTROL_CH1 = 144;
 
+int hits = 0;
+int scene = 0;
+
 std::map<Input::Button, int> buttonMidiControl;
 std::map<Input::Button, std::string> buttonName;
 std::map<Input::Button, int> buttonValues;
@@ -97,7 +100,26 @@ void MidiOut::sendMessage()
 void MidiOut::quickPress(uint32 b)
 {
 	sendUdp("quickpress|" + std::to_string(b));
-	sendUdp("quickunpress|" + std::to_string(b));
+}
+
+void MidiOut::sendTitle(String title) {
+  sendUdp("title|" + title);
+  hits = 0;
+  scene = 0;
+  sendUdp("h|0");
+  sendUdp("s|0");
+}
+
+void MidiOut::sendZoom(uint8 zoom, float val) {
+	sendUdp("zoom|" + std::to_string(zoom) + "|" + std::to_string(val));
+}
+
+void MidiOut::audioHit() {
+	sendUdp("h|" + std::to_string(++hits));
+}
+
+void MidiOut::sceneChange() {	
+	sendUdp("s|" + std::to_string(++scene));
 }
 
 void MidiOut::sendMessage(int a, int b, int c)

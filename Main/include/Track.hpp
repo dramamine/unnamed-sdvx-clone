@@ -20,6 +20,9 @@ public:
 	float buttonLength;
 	float fxbuttonLength;
 
+	int lastSceneChange = 0;
+	int lastHit = 0;
+
 	// Laser color setting
 	Color laserColors[2] = {};
 

@@ -27,7 +27,12 @@ public:
   void sendUdp(std::string str);
 	void sendMessage();
 	void sendMessage(int a, int b, int c);
-	void MidiOut::quickPress(uint32 b);
+	void quickPress(uint32 b);
+	void sendTitle(String title);
+	void sendZoom(uint8 zoom, float val);
+
+  void audioHit();
+	void sceneChange();
 	void onButtonPressed(Input::Button b);
 	void onButtonReleased(Input::Button b);
 	void tick(float deltaTime);

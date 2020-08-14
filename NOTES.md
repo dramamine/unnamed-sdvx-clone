@@ -9,6 +9,10 @@
 ## Tips
 
 - Change debugging active song by right clicking ALL_BUILD and going to Debugging -> Command line properties
+-  -debug -autoskip -autoplay
+"bin\songs\nautica\Aliquam\aliquam_exh.ksh"
+"bin\songs\FANCY\Seethrough\141 - electrobro - we see through (ft. romaine).ksh"
+- F2 calls SelectRandom() in SongSelect.cpp to choose a random song
 
 ## Changes
 
