@@ -25,6 +25,10 @@ A game based on [KShootMania](http://www.kshootmania.com/) and [SDVX](https://re
 - Song database searching
 - Linux/Windows/macOS support
 
+### During a song:
+- Hold \[Start\] and press \[FX-L\] to adjust hispeed modifier
+- Press \[-\] or \[+\] to adjust the playback speed of the song. (High scores won't be saved)
+
 ### Features currently on hold / in progress:
 - Song select UI/Controls to change HiSpeed and other game settings
 

@@ -98,6 +98,11 @@ private:
 	// Current lane toggle status
 	bool m_hideLane = false;
 
+	// playback speed of the song
+	float m_playbackSpeed = 1.0f;
+	// true if playback speed has been changed
+	bool m_playbackSpeedChanged = false;
+
 	// Use m-mod and what m-mod speed
 	SpeedMods m_speedMod;
 	float m_modSpeed = 400;
@@ -619,6 +624,9 @@ public:
 
 		m_particleSystem->Reset();
 		m_audioPlayback.SetVolume(1.0f);
+
+	  // still updating this here?
+		m_audioPlayback.SetPlaybackSpeed(m_playbackSpeed);
 
 		//unhide notes
 		m_hiddenObjects.clear();
@@ -1184,6 +1192,17 @@ public:
 		}
 
 		return true;
+	}
+
+	void UpdatePlaybackSpeed(float delta)
+	{
+		m_playbackSpeedChanged = true;
+		m_playbackSpeed += delta;
+		// only allow playback speeds in this range
+		// could have playback faster than 100%, but song crashes out if you increase the speed
+		// and play through the sample buffer before using the new playback speed
+		m_playbackSpeed = Math::Clamp(m_playbackSpeed, 0.5f, 1.0f);
+		m_audioPlayback.SetPlaybackSpeed(m_playbackSpeed);
 	}
 
 	void ApplyPlaybackSpeed()
@@ -2096,6 +2115,14 @@ public:
 		{
 			g_application->ReloadScript("gameplay", m_lua);
 		}
+		else if (code == SDL_SCANCODE_EQUALS) // or plus
+		{
+			UpdatePlaybackSpeed(0.05f);
+		}
+		else if (code == SDL_SCANCODE_MINUS)
+		{
+			UpdatePlaybackSpeed(-0.05f);
+		}
 	}
 
 	void OnKeyReleased(SDL_Scancode code) override
@@ -2558,6 +2585,7 @@ return Scoring::CalculateBadge(scoreData);
 
 		// GetPlaybackSpeed() returns 0 on end of a song
 		if (m_playOptions.playbackSpeed < 1.0f) return false;
+		if (m_playbackSpeedChanged) return false; // being extra safe
 
 		if (m_manualExit) return false;
 		if (IsPartialPlay()) return false;
@@ -2567,6 +2595,10 @@ return Scoring::CalculateBadge(scoreData);
 	virtual float GetPlaybackSpeed() override
 	{
 		return m_audioPlayback.GetPlaybackSpeed();
+	}
+	virtual bool GetPlaybackSpeedChanged()
+	{
+		return m_playbackSpeedChanged;
 	}
 	virtual int GetRetryCount() const override
 	{
